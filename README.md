@@ -2,7 +2,7 @@
 
 Vercel project for **avaivy.cloud**.
 
-Blank Next.js (App Router) template — ready to build on.
+Next.js (App Router) Vercel app for the Ava Ivy public web experience.
 
 ## Stack
 
@@ -31,4 +31,4 @@ Long-running processing does **not** belong in this repo.
 
 ## Scope
 
-This repo owns the public Ava Ivy web experience, identity pages, status surfaces, and frontend integrations with documented RootRecord APIs.
+This repo owns the Ava Ivy public web experience, identity pages, status surfaces, and frontend integrations with documented RootRecord APIs. Long-running processing remains on the AVA Processor behind `AVA_ORIGIN_URL`.
