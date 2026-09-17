@@ -1,22 +1,21 @@
 /**
- * Reads host state straight from Ava's origin through the cloudflared tunnel.
- *
- * Reachability IS the signal: if the box is powered down the fetch fails, so
- * there is no separate heartbeat store to keep in sync. Returns null when the
- * host cannot be reached for any reason.
+ * Reads host state from the public API tunnel (api.rootrecord.online).
+ * Desk dark / tunnel down → status OFFLINE. Never invents numbers.
  */
 
-export const AVA_ORIGIN =
-  process.env.AVA_ORIGIN_URL || "https://origin.avaivy.cloud";
+import { fetchDeskJson, isOffline, OFFLINE, PUBLIC_API } from "./desk-api";
+
+export const AVA_ORIGIN = PUBLIC_API;
 
 export interface HostStatus {
-  version: string;
-  ts: string;
-  uptime_s: number;
-  host: string;
-  cpu_pct: number;
-  mem_pct: number;
-  heartbeat_age_s: number | null;
+  status?: string;
+  version?: string;
+  ts?: string;
+  uptime_s?: number;
+  host?: string;
+  cpu_pct?: number;
+  mem_pct?: number;
+  heartbeat_age_s?: number | null;
   streaming?: boolean;
   live?: { streaming?: boolean; scene?: string | null };
   config?: Record<string, unknown>;
@@ -24,17 +23,10 @@ export interface HostStatus {
 
 export async function getHostStatus(
   revalidateSeconds = 30
-): Promise<HostStatus | null> {
-  try {
-    const res = await fetch(`${AVA_ORIGIN}/api/status`, {
-      next: { revalidate: revalidateSeconds },
-      signal: AbortSignal.timeout(6000),
-    });
-    if (!res.ok) return null;
-    return (await res.json()) as HostStatus;
-  } catch {
-    return null;
-  }
+): Promise<HostStatus> {
+  const data = await fetchDeskJson("/api/status", 6000);
+  if (isOffline(data)) return { status: OFFLINE };
+  return data as HostStatus;
 }
 
 export function formatUptime(seconds: number): string {
@@ -45,3 +37,4 @@ export function formatUptime(seconds: number): string {
   if (h > 0) return `${h}h ${m}m`;
   return `${m}m`;
 }
+

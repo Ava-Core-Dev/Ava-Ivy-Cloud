@@ -1,4 +1,4 @@
-import { AVA_ORIGIN } from "./status";
+import { PUBLIC_API } from "./desk-api";
 
 export interface LiveStatus {
   ok: boolean;
@@ -29,12 +29,13 @@ export const FALLBACK_LIVE: LiveStatus = {
 
 export async function getLiveStatus(revalidateSeconds = 10): Promise<LiveStatus> {
   try {
-    const res = await fetch(`${AVA_ORIGIN}/api/live`, {
+    const res = await fetch(`${PUBLIC_API}/api/live`, {
       next: { revalidate: revalidateSeconds },
       signal: AbortSignal.timeout(6000),
     });
     if (!res.ok) return FALLBACK_LIVE;
-    const data = (await res.json()) as LiveStatus;
+    const data = (await res.json()) as LiveStatus & { status?: string };
+    if (data.status === "OFFLINE") return FALLBACK_LIVE;
     return { ...FALLBACK_LIVE, ...data, live: !!(data.live || data.streaming) };
   } catch {
     return FALLBACK_LIVE;

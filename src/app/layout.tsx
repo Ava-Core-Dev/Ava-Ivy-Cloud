@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ChatDock from "@/components/ChatDock";
 import SiteChrome from "@/components/SiteChrome";
 import "./globals.css";
 
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <SiteChrome>{children}</SiteChrome>
+        <ChatDock />
       </body>
     </html>
   );

@@ -22,7 +22,7 @@ const nextConfig: NextConfig = {
     ];
   },
   async rewrites() {
-    const origin = process.env.AVA_ORIGIN_URL || "https://origin.avaivy.cloud";
+    const origin = process.env.AVA_ORIGIN_URL || process.env.AVA_PUBLIC_API || "https://api.rootrecord.online";
     return [
       { source: "/wiki", destination: "/wiki/index.html" },
       { source: "/wiki/", destination: "/wiki/index.html" },
